@@ -1,0 +1,7 @@
+# Your capabilities go here
+#
+# Create domain directories as needed:
+#   capabilities/your-domain/your-capability.yaml
+#
+# See examples/ for reference implementations.
+# See docs/authoring.md for the authoring guide.

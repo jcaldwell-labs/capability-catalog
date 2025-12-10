@@ -1,0 +1,93 @@
+id: log-aggregator-query
+name: Log Aggregator Query
+domain: observability
+version: 1.0.0
+
+action:
+  description: |
+    Query centralized logs from a log aggregation service (e.g., Elasticsearch,
+    Datadog, Splunk, Coralogix) to debug issues, trace requests, and analyze
+    system behavior across distributed services.
+  trigger: |
+    - Debugging failed requests or transactions
+    - Tracing request flow across microservices
+    - Investigating error spikes or anomalies
+    - Correlating events across multiple systems
+    - Post-incident analysis
+  examples:
+    - 'logs search "error" --service api-gateway --last 1h'
+    - 'logs trace --request-id abc-123-def'
+    - 'logs query "status:500 AND path:/api/orders" --env production'
+
+requires:
+  sources_of_truth:
+    - name: Log aggregator access
+      location: https://logs.example.com or configured endpoint
+      freshness: real-time
+      validation: "logs health" or web UI accessible
+    - name: Service-to-log mapping
+      location: Internal documentation or naming conventions
+      freshness: weekly
+      validation: Known service names return results
+    - name: Query language documentation
+      location: Vendor docs (Lucene, SPL, DataPrime, etc.)
+      freshness: static
+      validation: N/A
+
+  access:
+    - Log aggregator account with read permissions
+    - SSO or API token authentication
+    - Access to relevant log indices/namespaces
+
+  dependencies:
+    - service-discovery  # To know which services to query
+
+  environment:
+    - Web browser or CLI tool for log aggregator
+    - Query language familiarity (varies by vendor)
+
+  context:
+    - Target service or application name
+    - Time window for query
+    - Correlation IDs (request ID, trace ID, session ID)
+
+produces:
+  outputs:
+    - format: Log entries (JSON or structured text)
+      destination: Query results UI or stdout
+      consumers:
+        - Manual debugging analysis
+        - Incident reports
+        - Runbook creation
+    - format: Aggregations/statistics
+      destination: Dashboards or reports
+      consumers:
+        - Alerting rules
+        - Capacity planning
+
+  side_effects: []  # Read-only queries
+
+confidence:
+  maturity: stable
+  known_gaps:
+    - Log retention limits historical queries (typically 30-90 days)
+    - Not all environments log to the aggregator (dev may log locally only)
+    - High-cardinality queries may timeout
+    - Sampling in high-volume services means some logs are missing
+  failure_modes:
+    - Wrong service name returns empty results (looks like no logs exist)
+    - Timezone mismatch causes time range to miss relevant logs
+    - Query syntax errors fail silently with partial results
+    - Index not available for old time ranges (retention exceeded)
+  last_validated: 2025-01-15
+
+metadata:
+  author: example
+  created: 2025-01-15
+  updated: 2025-01-15
+  tags:
+    - observability
+    - logging
+    - debugging
+    - distributed-systems
+  related_skills: []

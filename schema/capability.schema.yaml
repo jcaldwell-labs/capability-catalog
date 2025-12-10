@@ -1,0 +1,207 @@
+# Capability Schema Definition v1.0.0
+# Every capability entry must conform to this contract
+
+$schema: "https://json-schema.org/draft/2020-12/schema"
+$id: "capability.schema.yaml"
+title: Capability Contract
+description: |
+  A capability = skill + environment context + truth dependencies
+  Each entry documents what's actually required to execute, not what's claimed.
+
+type: object
+required:
+  - id
+  - name
+  - domain
+  - version
+  - action
+  - requires
+  - produces
+  - confidence
+  - metadata
+
+properties:
+  id:
+    type: string
+    pattern: "^[a-z0-9-]+$"
+    description: Unique identifier, lowercase with hyphens
+
+  name:
+    type: string
+    description: Human readable capability name
+
+  domain:
+    type: string
+    enum:
+      - context-management
+      - payment-services
+      - development-tooling
+      - observability
+      - ci-cd
+      - data-engineering
+    description: Primary domain this capability belongs to
+
+  version:
+    type: string
+    pattern: "^\\d+\\.\\d+\\.\\d+$"
+    description: Semantic version of this capability definition
+
+  action:
+    type: object
+    required:
+      - description
+      - trigger
+    properties:
+      description:
+        type: string
+        description: What this capability actually does
+      trigger:
+        type: string
+        description: How/when this capability activates
+      examples:
+        type: array
+        items:
+          type: string
+        description: Concrete usage examples
+
+  requires:
+    type: object
+    description: Everything needed to actually execute this capability
+    properties:
+      sources_of_truth:
+        type: array
+        items:
+          type: object
+          required:
+            - name
+            - location
+            - freshness
+          properties:
+            name:
+              type: string
+            location:
+              type: string
+              description: Where this source lives (path, URL, system)
+            freshness:
+              type: string
+              enum:
+                - real-time
+                - minutes
+                - hours
+                - daily
+                - weekly
+                - static
+              description: How current this source needs to be
+            validation:
+              type: string
+              description: How to verify this source is accessible/valid
+
+      access:
+        type: array
+        items:
+          type: string
+        description: Required access (VPN, credentials, permissions)
+
+      dependencies:
+        type: array
+        items:
+          type: string
+        description: Other capability IDs this composes with
+
+      environment:
+        type: array
+        items:
+          type: string
+        description: Runtime requirements (tools, CLIs, services)
+
+      context:
+        type: array
+        items:
+          type: string
+        description: Contextual information needed (ticket IDs, tenant names, etc.)
+
+  produces:
+    type: object
+    required:
+      - outputs
+    properties:
+      outputs:
+        type: array
+        items:
+          type: object
+          required:
+            - format
+            - destination
+          properties:
+            format:
+              type: string
+              description: Output format (markdown, JSON, bash commands, etc.)
+            destination:
+              type: string
+              description: Where output goes (stdout, file, API, etc.)
+            consumers:
+              type: array
+              items:
+                type: string
+              description: What uses this output downstream
+
+      side_effects:
+        type: array
+        items:
+          type: string
+        description: State changes this capability causes
+
+  confidence:
+    type: object
+    required:
+      - maturity
+    properties:
+      maturity:
+        type: string
+        enum:
+          - experimental    # Proof of concept, may not work
+          - developing      # Works but rough edges
+          - stable          # Reliable for normal use
+          - battle-tested   # Proven under pressure
+        description: How reliable is this capability
+
+      known_gaps:
+        type: array
+        items:
+          type: string
+        description: Documented limitations
+
+      failure_modes:
+        type: array
+        items:
+          type: string
+        description: How this capability can fail
+
+      last_validated:
+        type: string
+        format: date
+        description: When this capability was last tested
+
+  metadata:
+    type: object
+    required:
+      - author
+      - created
+    properties:
+      author:
+        type: string
+      created:
+        type: string
+        format: date
+      updated:
+        type: string
+        format: date
+      tags:
+        type: array
+        items:
+          type: string
+      related_skills:
+        type: array
+        items:
+          type: string
+        description: Claude Code skill files that implement this capability

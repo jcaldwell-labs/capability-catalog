@@ -1,0 +1,90 @@
+id: rest-api-client
+name: REST API Client
+domain: development-tooling
+version: 1.0.0
+
+action:
+  description: |
+    Execute HTTP requests against REST APIs for testing and debugging.
+    Supports all standard methods (GET, POST, PUT, DELETE, PATCH) with
+    authentication, headers, and request body configuration.
+  trigger: |
+    - Testing API endpoints during development
+    - Debugging integration issues
+    - Validating API responses match expected schemas
+    - Automating API test suites
+  examples:
+    - "apicli get /users/123 --env staging"
+    - "apicli post /orders --data @order.json --env production"
+    - "apicli delete /sessions/abc --header 'X-Request-ID: test-123'"
+
+requires:
+  sources_of_truth:
+    - name: Environment configuration
+      location: ~/.apicli/environments.yaml
+      freshness: static
+      validation: "apicli config validate"
+    - name: API schema (OpenAPI/Swagger)
+      location: Project docs or API endpoint
+      freshness: daily
+      validation: Schema endpoint returns 200
+
+  access:
+    - Network access to target API (VPN for internal services)
+    - Valid authentication credentials (API key, OAuth token, or basic auth)
+    - Appropriate permission level for target operations
+
+  dependencies: []
+
+  environment:
+    - apicli v2.0+ installed (or curl/httpie as fallback)
+    - jq for JSON response parsing (optional)
+
+  context:
+    - Target environment (dev, staging, production)
+    - Authentication method for target environment
+
+produces:
+  outputs:
+    - format: JSON
+      destination: stdout
+      consumers:
+        - Manual inspection during debugging
+        - Test validation scripts
+        - CI/CD pipeline assertions
+    - format: HTTP status code
+      destination: exit code
+      consumers:
+        - Shell script conditionals
+        - CI/CD pass/fail decisions
+
+  side_effects:
+    - POST/PUT/DELETE modify server state
+    - Rate limit consumption on target API
+    - Audit log entries on server
+
+confidence:
+  maturity: stable
+  known_gaps:
+    - No automatic retry on transient failures (5xx errors)
+    - Large response bodies (>10MB) may timeout
+    - WebSocket endpoints not supported
+    - GraphQL requires separate tooling
+  failure_modes:
+    - Network timeout returns generic error (no distinction from server down)
+    - Expired OAuth token returns 401 (must manually refresh)
+    - Rate limit exceeded returns 429 (no automatic backoff)
+    - Invalid JSON in request body fails silently in some versions
+  last_validated: 2025-01-15
+
+metadata:
+  author: example
+  created: 2025-01-15
+  updated: 2025-01-15
+  tags:
+    - api
+    - http
+    - rest
+    - testing
+    - debugging
+  related_skills: []

@@ -1,0 +1,91 @@
+id: dev-session-tracking
+name: Development Session Tracking
+domain: context-management
+version: 1.0.0
+
+action:
+  description: |
+    Track decisions, file changes, and findings during development sessions.
+    Creates a persistent audit trail that survives context switches, enables
+    handoffs between developers or AI agents, and supports post-session
+    documentation generation.
+  trigger: |
+    - Starting any work session expected to last >30 minutes
+    - Beginning feature implementation, debugging, or code review
+    - When decisions need to be captured for future reference
+    - Before context-switching to preserve current state
+  examples:
+    - "session start 'feat-user-auth'"
+    - "session note 'Decision: Using JWT because mobile clients need stateless auth'"
+    - "session file src/auth/jwt.go tests/auth_test.go"
+    - "session export --format markdown > session-summary.md"
+
+requires:
+  sources_of_truth:
+    - name: Session tracking tool
+      location: CLI tool or IDE extension
+      freshness: static
+      validation: "session --version"
+    - name: Session storage
+      location: Local database, file system, or cloud service
+      freshness: real-time
+      validation: "session list" returns results
+
+  access:
+    - Write access to session storage
+    - Read access to tracked files (for file association)
+
+  dependencies: []
+
+  environment:
+    - Session tracking CLI or IDE extension installed
+    - Storage backend configured (SQLite, PostgreSQL, cloud service)
+
+  context:
+    - Session naming convention for organization
+    - Project or workspace context
+
+produces:
+  outputs:
+    - format: Markdown
+      destination: stdout or file via export
+      consumers:
+        - PR descriptions
+        - Handoff documentation
+        - Sprint retrospectives
+        - Future debugging context
+    - format: Structured data (JSON/YAML)
+      destination: Session storage
+      consumers:
+        - Session search and filtering
+        - Cross-session analysis
+        - Agent context loading
+
+  side_effects:
+    - Creates session records in storage
+    - Updates active session state
+
+confidence:
+  maturity: stable
+  known_gaps:
+    - File tracking is typically manual (no automatic git hook integration)
+    - Session boundaries are developer-defined (no automatic timeout)
+    - Cross-machine session access requires shared storage
+    - No automatic association with tickets/issues
+  failure_modes:
+    - Forgetting to start session loses context audit trail
+    - Storage unavailable causes command failures
+    - Session name collision overwrites previous sessions (in some tools)
+    - Export without active session returns empty output
+  last_validated: 2025-01-15
+
+metadata:
+  author: example
+  created: 2025-01-15
+  updated: 2025-01-15
+  tags:
+    - context-tracking
+    - documentation
+    - workflow
+    - handoff
+  related_skills: []
