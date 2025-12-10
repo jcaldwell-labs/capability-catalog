@@ -1,5 +1,7 @@
 # Capability Catalog
 
+> Skills tell agents what they know. Capabilities tell them what they can actually do *right now*.
+
 A schema and framework for documenting grounded, composable agent capabilities.
 
 ## The Problem
@@ -11,27 +13,71 @@ Agents claim capabilities without context. "I can debug your API" means nothing 
 - VPN state?
 - Required credentials?
 
+**Skills broadcast intentions. But context changes.** VPN disconnects. SSO expires. Dev environments don't log to prod aggregators. The skill doesn't know—it runs anyway and returns confidently wrong results.
+
 The gap between **claimed capability** and **grounded capability** is where agents become unreliable.
 
 ## The Solution
 
-This framework provides a schema for documenting capabilities as contracts—not marketing copy. Each entry specifies exactly what's required to execute, what can go wrong, and what honest limitations exist.
-
 **A capability = skill + environment context + truth dependencies**
+
+This framework provides a schema for documenting capabilities as contracts—not marketing copy. Each entry specifies:
+- What's required to execute
+- What can go wrong
+- What honest limitations exist
+
+Before an agent says "I can help", it can check if it *actually* can.
 
 ## Quick Start
 
-### 1. Create your capabilities directory
-
 ```bash
+# Clone the framework
 git clone https://github.com/jcaldwell-labs/capability-catalog.git
 cd capability-catalog
 
-# Create your own capabilities (keep these private or public as needed)
-mkdir -p capabilities/your-domain
+# Validate your capabilities
+python scripts/validate.py examples/
+
+# Run pre-flight check before executing
+python scripts/preflight.py examples/api-testing/rest-client.yaml
 ```
 
-### 2. Write a capability entry
+## Tools
+
+| Script | Purpose |
+|--------|---------|
+| `scripts/preflight.py` | Check if capability requirements are satisfied before execution |
+| `scripts/validate.py` | Validate capability YAML files against schema |
+
+### Pre-flight Check
+
+```bash
+$ python scripts/preflight.py examples/observability/log-query.yaml
+
+============================================================
+Pre-flight Check: Log Aggregator Query
+ID: log-aggregator-query | Maturity: stable
+============================================================
+
+Sources of Truth:
+  ✓ Log aggregator access
+      Accessible via SSO
+
+Access Requirements:
+  ⚠ Log aggregator account with read permissions
+      Manual verification needed
+
+Known Gaps (review before proceeding):
+  ⚠ Dev-tenant-A does NOT log to aggregator
+  ⚠ Log retention limits historical queries
+
+Summary:
+  Passed: 1 | Failed: 0 | Unknown: 1
+
+⚠ CAUTION: 1 requirement(s) need manual verification
+```
+
+## Write a Capability
 
 ```yaml
 # capabilities/your-domain/my-capability.yaml
@@ -43,9 +89,6 @@ version: 1.0.0
 action:
   description: Execute CRUD operations against MyService API
   trigger: When testing API endpoints or debugging integration issues
-  examples:
-    - "mycli get /users/123"
-    - "mycli post /orders --data '{...}'"
 
 requires:
   sources_of_truth:
@@ -80,20 +123,21 @@ metadata:
   tags: [api, testing, cli]
 ```
 
-### 3. Use capabilities for pre-flight checks
+## Examples
 
-Before an agent claims "I can help with that", it checks:
+| File | Description |
+|------|-------------|
+| [examples/api-testing/rest-client.yaml](examples/api-testing/rest-client.yaml) | Generic REST API testing |
+| [examples/observability/log-query.yaml](examples/observability/log-query.yaml) | Log aggregation queries |
+| [examples/context-management/session-tracking.yaml](examples/context-management/session-tracking.yaml) | Development session tracking |
+| [examples/failure-gallery.md](examples/failure-gallery.md) | **Real failure patterns** — when skills go wrong |
 
-```yaml
-requires:
-  access:
-    - VPN connected           # ✅ Can verify
-    - Valid API token         # ❓ Need to check
-  known_gaps:
-    - No pagination support   # ⚠️ May hit this on large queries
-```
+## Essays
 
-Now the agent knows what to verify before proceeding.
+Why this matters:
+
+- [From Skills to Capabilities](essays/from-skills-to-capabilities.md) — The conceptual argument for why skills aren't enough
+- [Context Switching Friction](essays/context-switching-friction.md) — Real-world evidence from work sessions
 
 ## Schema
 
@@ -128,14 +172,6 @@ See [schema/capability.schema.yaml](schema/capability.schema.yaml) for the full 
 | `daily` | Updated daily |
 | `static` | Doesn't change (CLI binary, config) |
 
-## Examples
-
-See [examples/](examples/) for complete capability entries:
-
-- `examples/api-testing/rest-client.yaml` — Generic REST API testing
-- `examples/observability/log-query.yaml` — Log aggregation queries
-- `examples/context-management/session-tracking.yaml` — Development session tracking
-
 ## Documentation
 
 - [Authoring Guide](docs/authoring.md) — How to write good capability entries
@@ -159,20 +195,23 @@ Each capability entry is a contract:
 
 ### Composability
 
-Capabilities can depend on other capabilities. This makes the dependency graph explicit:
+Capabilities can depend on other capabilities:
 
 ```yaml
 dependencies:
-  - database-query      # Need to get IDs first
+  - database-query        # Need to get IDs first
   - log-aggregator-query  # Then correlate with logs
 ```
 
+The dependency graph is explicit. If a dependency is blocked, you know before starting.
+
 ## Use Cases
 
-1. **Agent Self-Assessment**: Before claiming a capability, verify requirements
-2. **Onboarding Documentation**: New team members understand what's actually available
+1. **Agent Self-Assessment**: Before claiming a capability, verify requirements are met
+2. **Onboarding Documentation**: New team members understand what's *actually* available
 3. **Incident Response**: Know exactly what tools work in which environments
 4. **Capability Planning**: Identify gaps in your tooling coverage
+5. **Context Switch Safety**: Re-validate after changing environments, tenants, or credentials
 
 ## Contributing
 
