@@ -1,59 +1,44 @@
 # Capability Catalog
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
+[![Schema Version](https://img.shields.io/badge/schema-1.0.0-blue.svg)](schema/capability.schema.yaml)
+
 > Skills tell agents what they know. Capabilities tell them what they can actually do *right now*.
 
 A schema and framework for documenting grounded, composable agent capabilities.
 
-## The Problem
+## Why Capability Catalog?
 
-Agents claim capabilities without context. "I can debug your API" means nothing without knowing:
-- Which environment?
-- What log access?
-- Current schema version?
-- VPN state?
-- Required credentials?
+| Challenge | Skills Alone | With Capabilities |
+|-----------|--------------|-------------------|
+| **Context awareness** | "I can query logs" | "I can query logs, but dev-cf doesn't log to the aggregator" |
+| **Pre-flight validation** | Discover failures mid-task | Check requirements before starting |
+| **Honest limitations** | Optimistic claims | Documented `known_gaps` and `failure_modes` |
+| **Environment changes** | Same claim everywhere | Grounded to current VPN, credentials, access |
+| **Debugging failures** | Generic errors | Context-aware diagnostics from failure modes |
 
-**Skills broadcast intentions. But context changes.** VPN disconnects. SSO expires. Dev environments don't log to prod aggregators. The skill doesn't know—it runs anyway and returns confidently wrong results.
-
-The gap between **claimed capability** and **grounded capability** is where agents become unreliable.
-
-## The Solution
-
-**A capability = skill + environment context + truth dependencies**
-
-This framework provides a schema for documenting capabilities as contracts—not marketing copy. Each entry specifies:
-- What's required to execute
-- What can go wrong
-- What honest limitations exist
-
-Before an agent says "I can help", it can check if it *actually* can.
+**The gap between claimed capability and grounded capability is where agents become unreliable.** This framework closes that gap.
 
 ## Quick Start
 
+### 1. Clone the Repository
+
 ```bash
-# Clone the framework
 git clone https://github.com/jcaldwell-labs/capability-catalog.git
 cd capability-catalog
-
-# Validate your capabilities
-python scripts/validate.py examples/
-
-# Run pre-flight check before executing
-python scripts/preflight.py examples/api-testing/rest-client.yaml
 ```
 
-## Tools
+### 2. Run Pre-flight Check
 
-| Script | Purpose |
-|--------|---------|
-| `scripts/preflight.py` | Check if capability requirements are satisfied before execution |
-| `scripts/validate.py` | Validate capability YAML files against schema |
-
-### Pre-flight Check
+Validate that capability requirements are satisfied before execution:
 
 ```bash
-$ python scripts/preflight.py examples/observability/log-query.yaml
+python scripts/preflight.py examples/observability/log-query.yaml
+```
 
+Output:
+```
 ============================================================
 Pre-flight Check: Log Aggregator Query
 ID: log-aggregator-query | Maturity: stable
@@ -76,6 +61,51 @@ Summary:
 
 ⚠ CAUTION: 1 requirement(s) need manual verification
 ```
+
+### 3. Validate Your Capabilities
+
+Ensure capability files conform to the schema:
+
+```bash
+python scripts/validate.py examples/
+```
+
+### 4. Write Your First Capability
+
+```bash
+mkdir -p capabilities/your-domain
+cp examples/api-testing/rest-client.yaml capabilities/your-domain/my-capability.yaml
+# Edit to match your use case
+```
+
+## The Problem
+
+Agents claim capabilities without context. "I can debug your API" means nothing without knowing:
+- Which environment?
+- What log access?
+- Current schema version?
+- VPN state?
+- Required credentials?
+
+**Skills broadcast intentions. But context changes.** VPN disconnects. SSO expires. Dev environments don't log to prod aggregators. The skill doesn't know—it runs anyway and returns confidently wrong results.
+
+## The Solution
+
+**A capability = skill + environment context + truth dependencies**
+
+This framework provides a schema for documenting capabilities as contracts—not marketing copy. Each entry specifies:
+- What's required to execute
+- What can go wrong
+- What honest limitations exist
+
+Before an agent says "I can help", it can check if it *actually* can.
+
+## Tools
+
+| Script | Purpose |
+|--------|---------|
+| `scripts/preflight.py` | Check if capability requirements are satisfied before execution |
+| `scripts/validate.py` | Validate capability YAML files against schema |
 
 ## Write a Capability
 
@@ -132,14 +162,7 @@ metadata:
 | [examples/context-management/session-tracking.yaml](examples/context-management/session-tracking.yaml) | Development session tracking |
 | [examples/failure-gallery.md](examples/failure-gallery.md) | **Real failure patterns** — when skills go wrong |
 
-## Essays
-
-Why this matters:
-
-- [From Skills to Capabilities](essays/from-skills-to-capabilities.md) — The conceptual argument for why skills aren't enough
-- [Context Switching Friction](essays/context-switching-friction.md) — Real-world evidence from work sessions
-
-## Schema
+## Schema Reference
 
 See [schema/capability.schema.yaml](schema/capability.schema.yaml) for the full schema definition.
 
@@ -177,6 +200,13 @@ See [schema/capability.schema.yaml](schema/capability.schema.yaml) for the full 
 - [Authoring Guide](docs/authoring.md) — How to write good capability entries
 - [Integration Guide](docs/integration.md) — Using capabilities with AI agents
 - [Schema Reference](docs/schema-reference.md) — Full schema documentation
+
+## Essays
+
+Why this matters:
+
+- [From Skills to Capabilities](essays/from-skills-to-capabilities.md) — The conceptual argument for why skills aren't enough
+- [Context Switching Friction](essays/context-switching-friction.md) — Real-world evidence from work sessions
 
 ## Philosophy
 

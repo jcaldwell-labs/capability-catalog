@@ -1,0 +1,67 @@
+# Capability Catalog
+
+> Schema and framework for documenting grounded, composable agent capabilities
+
+## Overview
+
+Capability Catalog addresses the gap between what AI agents claim they can do and what they can actually do in a given context. Skills describe knowledge; capabilities describe grounded, validated abilities with explicit requirements and limitations.
+
+## Core Concept
+
+capability = skill + environment context + truth dependencies
+
+## Key Features
+
+- Pre-flight validation before capability execution
+- Explicit requirements (sources of truth, access, dependencies)
+- Documented known gaps and failure modes
+- Composable capability dependencies
+- Maturity levels (experimental, developing, stable, battle-tested)
+
+## Schema Structure
+
+Each capability entry includes:
+- action: What it does and when to trigger
+- requires: Sources of truth, access, dependencies, environment, context
+- produces: Outputs and side effects
+- confidence: Maturity level, known gaps, failure modes
+- metadata: Author, dates, tags
+
+## Tools
+
+- scripts/preflight.py: Check capability requirements before execution
+- scripts/validate.py: Validate YAML files against schema
+
+## Primary Use Cases
+
+1. Agent self-assessment before claiming capabilities
+2. Onboarding documentation showing actual tooling availability
+3. Incident response knowing which tools work where
+4. Context switch safety after environment changes
+
+## Repository Structure
+
+- capabilities/: User capability definitions
+- examples/: Example capability files
+- schema/: Capability schema definition
+- scripts/: Validation and pre-flight tools
+- docs/: Guides (authoring, integration, schema reference)
+- essays/: Conceptual essays on agent reliability
+
+## Getting Started
+
+1. Clone: git clone https://github.com/jcaldwell-labs/capability-catalog.git
+2. Pre-flight check: python scripts/preflight.py examples/observability/log-query.yaml
+3. Validate: python scripts/validate.py examples/
+4. Write capability: Create YAML file following schema
+
+## Links
+
+- Repository: https://github.com/jcaldwell-labs/capability-catalog
+- Schema: schema/capability.schema.yaml
+- Authoring Guide: docs/authoring.md
+- Integration Guide: docs/integration.md
+
+## License
+
+MIT
