@@ -243,6 +243,42 @@ The dependency graph is explicit. If a dependency is blocked, you know before st
 4. **Capability Planning**: Identify gaps in your tooling coverage
 5. **Context Switch Safety**: Re-validate after changing environments, tenants, or credentials
 
+## Related jcaldwell-labs Projects
+
+This repository is part of the [jcaldwell-labs](https://github.com/jcaldwell-labs) organization. Related projects:
+
+### Terminal/TUI Projects
+
+| Project | Description |
+|---------|-------------|
+| [my-grid](https://github.com/jcaldwell-labs/my-grid) | ASCII canvas editor with vim-style navigation, zones, and PTY support |
+| [boxes-live](https://github.com/jcaldwell-labs/boxes-live) | Real-time ASCII box drawing with joystick support |
+| [terminal-stars](https://github.com/jcaldwell-labs/terminal-stars) | Starfield animation for terminals |
+| [atari-style](https://github.com/jcaldwell-labs/atari-style) | Retro visual effects and shaders for terminal apps |
+| [smartterm-prototype](https://github.com/jcaldwell-labs/smartterm-prototype) | Smart terminal with readline-like features |
+
+### CLI Tools
+
+| Project | Description |
+|---------|-------------|
+| [my-context](https://github.com/jcaldwell-labs/my-context) | Context tracking for development sessions (Go CLI) |
+| [fintrack](https://github.com/jcaldwell-labs/fintrack) | Personal finance tracking CLI (Go) |
+| [tario](https://github.com/jcaldwell-labs/tario) | Terminal-based platformer game (Go) |
+
+### Game Engines
+
+| Project | Description |
+|---------|-------------|
+| [adventure-engine-v2](https://github.com/jcaldwell-labs/adventure-engine-v2) | Multiplayer text adventure engine (C) |
+
+### Synergies
+
+- **atari-style + terminal-stars**: Shaders from atari-style can enhance terminal-stars visuals with CRT effects, scanlines, and color bleeding
+- **my-grid + boxes-live**: my-grid's zone system could incorporate boxes-live's real-time drawing for interactive canvas editing
+- **capability-catalog + my-context**: Capabilities can track `my-context` as a source of truth for session state and decision history
+- **smartterm-prototype + adventure-engine-v2**: Smart terminal features could enhance the text adventure interface with command completion and history
+- **tario + atari-style**: The platformer could use retro shaders for authentic 8-bit visual aesthetics
+
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.

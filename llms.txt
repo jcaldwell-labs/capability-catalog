@@ -55,6 +55,31 @@ Each capability entry includes:
 3. Validate: python scripts/validate.py examples/
 4. Write capability: Create YAML file following schema
 
+## Related jcaldwell-labs Projects
+
+This repository is part of the jcaldwell-labs organization. Sister projects with potential synergies:
+
+### Terminal/TUI
+- my-grid: ASCII canvas editor with vim-style navigation, zones, PTY support
+- boxes-live: Real-time ASCII box drawing with joystick support
+- terminal-stars: Starfield animation for terminals
+- atari-style: Retro visual effects and shaders for terminal apps
+- smartterm-prototype: Smart terminal with readline-like features
+
+### CLI Tools
+- my-context: Context tracking for development sessions (Go CLI)
+- fintrack: Personal finance tracking CLI (Go)
+- tario: Terminal-based platformer game (Go)
+
+### Game Engines
+- adventure-engine-v2: Multiplayer text adventure engine (C)
+
+### Key Synergies
+- atari-style shaders can enhance terminal-stars with CRT effects
+- capability-catalog can track my-context as source of truth for session state
+- smartterm-prototype features could enhance adventure-engine-v2 interface
+- my-grid zones could incorporate boxes-live real-time drawing
+
 ## Links
 
 - Repository: https://github.com/jcaldwell-labs/capability-catalog
